@@ -1,0 +1,40 @@
+﻿<Window x:Class="WpfAppDataGridView.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfAppDataGridView"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <Button x:Name="Hoge" Content="Hoge" Click="Hoge_Click" />
+            <DataGrid x:Name="CellValue" ItemsSource="{Binding DG_ViewModels}" AutoGenerateColumns="False" CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Slot" Binding="{Binding Slot, Mode=TwoWay}" />
+                    <DataGridTemplateColumn Header="Execute">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Execute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsEnableExecute}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Data1">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Data1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Data2">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Data2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+    </Grid>
+</Window>
