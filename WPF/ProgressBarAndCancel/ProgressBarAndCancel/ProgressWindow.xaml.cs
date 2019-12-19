@@ -20,22 +20,20 @@ namespace ProgressBarAndCancel {
     public partial class ProgressWindow : Window {
 
         BackgroundWorker _BackgroundWorker = new BackgroundWorker();
-        Action<BackgroundWorker> _Action;
         public bool Complete { get; private set; }
         public bool Close { get; private set; }
 
 
-        public ProgressWindow(ProgressViewModel progVM, Action<BackgroundWorker> action) {
+        public ProgressWindow(ProgressViewModel progVM, BackgroundWorker bw) {
             InitializeComponent();
 
-            _Action = action;
+            _BackgroundWorker = bw;
             DataContext = progVM;
             Complete = false;
             Close = false;
 
             _BackgroundWorker.WorkerSupportsCancellation = true; // バックグラウンド処理をキャンセルできるようにする
             _BackgroundWorker.WorkerReportsProgress = true; // 進捗状況の報告をできるようにする
-            _BackgroundWorker.DoWork += _BackgroundWorker_DoWork;
             _BackgroundWorker.RunWorkerCompleted += _BackgroundWorker_RunWorkerCompleted;
             _BackgroundWorker.RunWorkerAsync();
         }
@@ -45,17 +43,7 @@ namespace ProgressBarAndCancel {
                 _BackgroundWorker.CancelAsync();
             }
         }
-
-        /// <summary>
-        /// RunWorkerAsync() を実行したときに呼ばれるイベントハンドラー
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void _BackgroundWorker_DoWork(object sender, DoWorkEventArgs e) {
-            if (_Action != null)
-                _Action(_BackgroundWorker);
-        }
-
+        
         /// <summary>
         /// バックグラウンド操作の完了時、キャンセル時、またはバックグラウンド操作によって例外が発生したときに発生する
         /// イベントハンドラー

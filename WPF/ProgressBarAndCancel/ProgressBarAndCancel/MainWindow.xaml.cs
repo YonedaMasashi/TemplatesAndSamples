@@ -20,30 +20,42 @@ namespace ProgressBarAndCancel {
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
     public partial class MainWindow : Window {
+
+        BackgroundWorker _BackgroundWorker = new BackgroundWorker();
+        ProgressViewModel _ProgressViewModel = new ProgressViewModel();
+
         public MainWindow() {
             InitializeComponent();
+            _BackgroundWorker.DoWork += BackgroundWorker_DoWork;
         }
 
-        private async void BtnStart_Click(object sender, RoutedEventArgs e) {
-            ProgressViewModel progressViewModel = new ProgressViewModel();
-
-            var progressWindow = new ProgressWindow(progressViewModel, 
-                (BackgroundWorker bw) => {
-                    int loopMax = 5;
-                    for (int i = 0; i < loopMax; ++i) {
-                        if (bw.CancellationPending == true) {
-                            return;
-                        }
-                        var prg = (int)(((double)i / (double)loopMax) * 100.0);
-                        progressViewModel.Progress = prg;
-                        progressViewModel.ProgressText = string.Format("{0} / {1}", i + 1, loopMax);
-                        var proc = new DummyProcess();
-                        proc.Execute();
-                    }
-                });
-
+        private void BtnStart_Click(object sender, RoutedEventArgs e) {
+            var progressWindow = new ProgressWindow(_ProgressViewModel, _BackgroundWorker);
             progressWindow.ShowDialog();
+        }
 
+        /// <summary>
+        /// RunWorkerAsync() を実行したときに呼ばれるイベントハンドラー
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e) {
+            int loopMax = 5;
+            for (int i = 0; i < loopMax; ++i) {
+                // キャンセル判定
+                if (_BackgroundWorker.CancellationPending == true) {
+                    return;
+                }
+
+                // 進捗表示
+                var prg = (int)(((double)i / (double)loopMax) * 100.0);
+                _ProgressViewModel.Progress = prg;
+                _ProgressViewModel.ProgressText = string.Format("{0} / {1}", i + 1, loopMax);
+
+                // 本処理
+                var proc = new DummyProcess();
+                proc.Execute();
+            }
         }
     }
 }
