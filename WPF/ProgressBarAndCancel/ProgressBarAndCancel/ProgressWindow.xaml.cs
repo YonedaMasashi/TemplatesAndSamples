@@ -19,15 +19,16 @@ namespace ProgressBarAndCancel {
     /// </summary>
     public partial class ProgressWindow : Window {
 
-        BackgroundWorker _BackgroundWorker = new BackgroundWorker();
+        BackgroundWorker _BackgroundWorker = null;
         public bool Complete { get; private set; }
         public bool Close { get; private set; }
 
 
-        public ProgressWindow(ProgressViewModel progVM, BackgroundWorker bw) {
+        public ProgressWindow(BackgroundWorker bw) {
             InitializeComponent();
 
             _BackgroundWorker = bw;
+            ProgressViewModel progVM = new ProgressViewModel();
             DataContext = progVM;
             Complete = false;
             Close = false;
@@ -35,7 +36,7 @@ namespace ProgressBarAndCancel {
             _BackgroundWorker.WorkerSupportsCancellation = true; // バックグラウンド処理をキャンセルできるようにする
             _BackgroundWorker.WorkerReportsProgress = true; // 進捗状況の報告をできるようにする
             _BackgroundWorker.RunWorkerCompleted += _BackgroundWorker_RunWorkerCompleted;
-            _BackgroundWorker.RunWorkerAsync();
+            _BackgroundWorker.RunWorkerAsync(progVM);
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e) {

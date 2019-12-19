@@ -21,16 +21,15 @@ namespace ProgressBarAndCancel {
     /// </summary>
     public partial class MainWindow : Window {
 
-        BackgroundWorker _BackgroundWorker = new BackgroundWorker();
-        ProgressViewModel _ProgressViewModel = new ProgressViewModel();
-
         public MainWindow() {
             InitializeComponent();
-            _BackgroundWorker.DoWork += BackgroundWorker_DoWork;
         }
 
         private void BtnStart_Click(object sender, RoutedEventArgs e) {
-            var progressWindow = new ProgressWindow(_ProgressViewModel, _BackgroundWorker);
+            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            backgroundWorker.DoWork += BackgroundWorker_DoWork;
+
+            var progressWindow = new ProgressWindow(backgroundWorker);
             progressWindow.ShowDialog();
         }
 
@@ -43,14 +42,16 @@ namespace ProgressBarAndCancel {
             int loopMax = 5;
             for (int i = 0; i < loopMax; ++i) {
                 // キャンセル判定
-                if (_BackgroundWorker.CancellationPending == true) {
+                BackgroundWorker worker = sender as BackgroundWorker;
+                if (worker.CancellationPending == true) {
                     return;
                 }
 
                 // 進捗表示
+                ProgressViewModel progressVM = e.Argument as ProgressViewModel;
                 var prg = (int)(((double)i / (double)loopMax) * 100.0);
-                _ProgressViewModel.Progress = prg;
-                _ProgressViewModel.ProgressText = string.Format("{0} / {1}", i + 1, loopMax);
+                progressVM.Progress = prg;
+                progressVM.ProgressText = string.Format("{0} / {1}", i + 1, loopMax);
 
                 // 本処理
                 var proc = new DummyProcess();
